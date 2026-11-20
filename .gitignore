@@ -1,0 +1,22 @@
+# MAI no s'ha de pujar res privat
+.env
+*.env
+*.db
+transcriptions.db
+correccions.txt
+idioma.txt
+registre.txt
+dictar.lock
+clau*.txt
+*.key
+
+# Fitxers de fabricació
+__pycache__/
+*.pyc
+dist/
+obra/
+sortida/
+build/dictar.ico
+venv/
+.venv/
+.DS_Store
