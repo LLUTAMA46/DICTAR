@@ -413,7 +413,8 @@ def main():
     if not bloqueig.tryLock(100):
         QMessageBox.information(None, "DICTAR",
                                 "DICTAR ja està en marxa.\n\n"
-                                "Per dictar, prem dues vegades la tecla Ctrl.")
+                                "Per dictar, prem dues vegades la tecla Ctrl.\n"
+                                "El menú és a la icona de DICTAR, al costat del rellotge.")
         sys.exit(0)
     app.setApplicationName("DICTAR")
     app.setQuitOnLastWindowClosed(False)
