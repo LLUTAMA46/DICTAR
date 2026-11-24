@@ -1,65 +1,26 @@
-"""Moletillas (filler words) and common patterns for text cleanup."""
+"""Sons de dubte que es treuen del text dictat.
 
-# Catalan moletillas and patterns
+Criteri (24/11/2026, decidit pel Lluís): NOMÉS sons, MAI paraules.
+Paraules com «em», «heu», «doncs», «o sigui», «vaja», «eh», «pues»,
+«bueno», «a lo mejor»... són de l'autor o dels seus personatges i
+no s'esborren mai. Còpia de l'antiga llista a el commit anterior del repositori.
+"""
+
+# Sons de dubte (es reconeixen igual en català i en castellà)
+_SONS = r'\b(?:ehm+|eh{2,}|e{3,}|m{2,}|hm+|uhm+|um{2,}|ah{2,}|u{3,}|h{3,})\b'
+
 CA_MOLETILLAS = {
-    r'\bvaja\b': '',
-    r'\beh\b': '',
-    r'\bem\b': '',
-    r'\bés a dir\b': '',
-    r'\bo sigui\b': '',
-    r'\bpràcticament\b': '',
-    r'\bbasicament\b': '',
-    r'\bdoncs\b': '',
-    r'\bdons\b': '',
-    r'\bpues\b': '',
-    r'\bbu\b': '',
-    r'\bheu\b': '',
-    r'\bpor\b': '',
-    r'\bpor favor\b': 'sisplau',
-    r'\bmmm\b': '',
-    r'\bhhh\b': '',
-    r'\bahhh\b': '',
-    r'\buuu\b': '',
-    r'\bummm\b': '',
+    _SONS: '',
     r'\byy\b': 'i',
-    r'\bi bueno\b': 'i',
-    r'\bbueno bueno\b': '',
 }
 
-# Spanish moletillas and patterns
 ES_MOLETILLAS = {
-    r'[¿]?sabes\s+qué\s+digo[?]?': '',
-    r'\bvale\b': '',
-    r'\bvaya\b': '',
-    r'\beh\b': '',
-    r'\bem\b': '',
-    r'\bses decir\b': '',
-    r'\bo sea\b': '',
-    r'\bpues\b': '',
-    r'\bpus\b': '',
-    r'\bbueno\b': '',
-    r'\bahhh\b': '',
-    r'\bumm\b': '',
-    r'\bmmm\b': '',
-    r'\bhhh\b': '',
-    r'\buuu\b': '',
-    r'\by y\b': 'y',
-    r'\bi bueno\b': 'y',
-    r'\ba ver\b': '',
-    r'\ba lo mejor\b': '',
-    r'\btambién también\b': 'también',
+    _SONS: '',
+    r'\byy\b': 'y',
 }
 
-# Common patterns for both languages
+# (Es mantenen per compatibilitat amb el codi que les importa.)
 COMMON_PATTERNS = {
-    r'\s+': ' ',  # Multiple spaces to single space
-    r'([.!?])\s+([a-z])': r'\1 \2',  # Capitalize after punctuation (will be handled elsewhere)
-    r'\s+([.!?,;:])': r'\1',  # Remove space before punctuation
-}
-
-# Abbreviations to expand (optional)
-ABBREVIATIONS = {
-    'tb': 'también',
-    'tbm': 'también',
-    'xq': 'porque',
+    r'\s+': ' ',
+    r'\s+([.!?,;:])': r'\1',
 }
