@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>DICTAR</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%236B5FC7'/><rect x='38' y='20' width='24' height='40' rx='12' fill='white'/><path d='M28 48a22 22 0 0 0 44 0' stroke='white' stroke-width='6' fill='none'/><rect x='47' y='70' width='6' height='12' fill='white'/></svg>">
+<style>
+:root{
+  --fons:#F7F5FB; --paper:#FFFFFF; --tinta:#26233A; --suau:#6E6A85; --accent:#6B5FC7;
+  --accent-fosc:#4F43A8; --vora:#E2DEEF; --vermell:#C8414B; --verd:#1F7A55; --groc:#F6E7C2; --groc-text:#633806;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --fons:#17151F; --paper:#221F2E; --tinta:#EEEAF8; --suau:#A9A4C0; --accent:#8F84E8;
+    --accent-fosc:#B3AAF5; --vora:#37324A; --vermell:#E2646D; --verd:#4FC08D; --groc:#3D3320; --groc-text:#F3D9A0; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fons);color:var(--tinta);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-size:19px;line-height:1.5}
+main{max-width:760px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:34px;margin:0;color:var(--accent);letter-spacing:.02em}
+.sub{color:var(--suau);margin:2px 0 24px}
+.capsa{background:var(--paper);border:1px solid var(--vora);border-radius:16px;padding:22px;margin-bottom:18px}
+.capsa h2{font-size:21px;margin:0 0 10px}
+label{display:block;font-weight:600;margin-bottom:6px}
+input[type=password],input[type=text]{width:100%;font-size:18px;padding:12px;border:2px solid var(--vora);border-radius:10px;background:var(--fons);color:var(--tinta)}
+button{font:inherit;cursor:pointer;border-radius:12px;border:2px solid var(--accent);background:var(--paper);color:var(--accent);padding:10px 18px;font-weight:600}
+button.ple{background:var(--accent);color:#fff}
+button:focus-visible{outline:3px solid var(--accent-fosc);outline-offset:3px}
+a{color:var(--accent)}
+.fila{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.idioma button{flex:1;min-width:140px;font-size:19px}
+.idioma button[aria-pressed=true]{background:var(--accent);color:#fff}
+#gran{display:flex;flex-direction:column;align-items:center;gap:14px;padding:30px 22px}
+#boto{width:190px;height:190px;border-radius:50%;font-size:26px;border:none;background:var(--accent);color:#fff;box-shadow:0 8px 24px rgba(107,95,199,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:transform .1s}
+#boto:active{transform:scale(.97)}
+#boto.grava{background:var(--vermell);box-shadow:0 0 0 0 rgba(200,65,75,.6);animation:pols 1.4s infinite}
+#boto.treballa{background:var(--suau);cursor:wait}
+#boto svg{width:56px;height:56px}
+@keyframes pols{0%{box-shadow:0 0 0 0 rgba(200,65,75,.55)}70%{box-shadow:0 0 0 22px rgba(200,65,75,0)}100%{box-shadow:0 0 0 0 rgba(200,65,75,0)}}
+#estat{font-size:21px;text-align:center;min-height:32px;font-weight:600}
+#estat.ok{color:var(--verd)} #estat.error{color:var(--vermell)}
+.pista{color:var(--suau);text-align:center;margin:0}
+#text{width:100%;min-height:130px;font-size:19px;padding:14px;border:2px solid var(--vora);border-radius:12px;background:var(--fons);color:var(--tinta);font-family:inherit;resize:vertical}
+.correccions{color:var(--suau);font-size:16px;margin:8px 0 0}
+.avis{background:var(--groc);color:var(--groc-text);border-radius:12px;padding:14px 16px;font-weight:600}
+#historial ol{list-style:none;padding:0;margin:0}
+#historial li{border-top:1px solid var(--vora);padding:12px 0;display:flex;gap:12px;align-items:flex-start}
+#historial li span{flex:1}
+#historial small{display:block;color:var(--suau)}
+.amagat{display:none!important}
+footer{color:var(--suau);font-size:15px;margin-top:28px}
+.enllac{background:none;border:none;padding:0;color:var(--accent);text-decoration:underline;font-weight:400}
+</style>
+</head>
+<body>
+<main>
+  <h1>DICTAR</h1>
+  <p class="sub">Parla, i el text queda copiat. Després, al Word, prem <b>Ctrl+V</b>.</p>
+
+  <!-- Primera vegada: la clau de Groq -->
+  <section id="clau" class="capsa amagat">
+    <h2>Primera vegada: la teva clau de Groq</h2>
+    <p>Enganxa aquí la clau que t'ha donat Groq (comença per <b>gsk_</b>). Només cal fer-ho una vegada en aquest ordinador.</p>
+    <p>No en tens? Crea-la gratis a <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a>.</p>
+    <label for="clauInput">La clau</label>
+    <input id="clauInput" type="password" autocomplete="off" spellcheck="false" placeholder="gsk_...">
+    <p id="clauError" class="avis amagat" style="margin-top:12px"></p>
+    <div class="fila" style="margin-top:14px">
+      <button id="desaClau" class="ple">Desa i comença</button>
+      <button id="cancelaClau" class="amagat">Cancel·la</button>
+    </div>
+  </section>
+
+  <section id="app" class="amagat">
+    <div class="capsa">
+      <h2>En quina llengua dictes?</h2>
+      <div class="fila idioma">
+        <button data-idioma="ca" aria-pressed="true">Català</button>
+        <button data-idioma="es" aria-pressed="false">Castellano</button>
+      </div>
+    </div>
+
+    <div class="capsa" id="gran">
+      <button id="boto" aria-live="polite">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v5"/></svg>
+        <span id="botoText">Dicta</span>
+      </button>
+      <div id="estat" role="status"></div>
+      <p class="pista" id="pista">Clica el botó (o prem la barra espaiadora), parla, i torna a clicar per acabar.</p>
+    </div>
+
+    <div class="capsa amagat" id="resultat">
+      <h2>El teu text</h2>
+      <textarea id="text" aria-label="Text dictat"></textarea>
+      <p class="correccions amagat" id="correccions"></p>
+      <div class="fila" style="margin-top:12px">
+        <button id="copia" class="ple">Copia de nou</button>
+      </div>
+    </div>
+
+    <div class="capsa amagat" id="historial">
+      <h2>Dictats d'avui i d'abans</h2>
+      <p class="pista" style="text-align:left;margin-bottom:8px">Només es guarden en aquest navegador. Clica «Copia» per recuperar-ne un.</p>
+      <ol id="llista"></ol>
+      <div class="fila" style="margin-top:12px"><button id="esborraHist">Esborra l'historial</button></div>
+    </div>
+
+    <footer>
+      <p><b>Privadesa.</b> La veu s'envia a Groq perquè la converteixi en text, i el text passa pel corrector LanguageTool (el mateix motor que el de Softcatalà). Aquesta pàgina no envia res a cap altre lloc: la clau i l'historial es queden en aquest navegador.</p>
+      <p><button class="enllac" id="canviaClau">Canvia la clau de Groq</button></p>
+    </footer>
+  </section>
+</main>
+
+<script>
+"use strict";
+// ───────── Configuració ─────────
+const GROQ_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
+const MODEL = "whisper-large-v3-turbo";
+const CORRECTOR_URL = "https://api.languagetool.org/v2/check";
+const VOCABULARI = {
+  ca: "Dictat en català, amb comes i punts. Escriptor, ordinador, Softcatalà.",
+  es: "Dictado en castellano, con comas y puntos. Escritor, ordenador.",
+};
+const CORRECTOR_LLENGUA = { ca: "ca-ES", es: "es" };
+// Frases que Whisper s'inventa quan només sent silenci.
+const FANTASMES = [/amara\.org/i, /subt[ií]tols? realitzats/i, /subt[ií]tulos realizados/i, /gr[àa]cies per (la vostra atenci[óo]|veure)/i];
+// Correccions que s'apliquen soles (les mateixes que el DICTAR instal·lat).
+const SEGURES = new Set(["TYPOS","DIACRITICS","DIACRITICS_IEC","CONFUSIONS","APOSTROPHATION","PUNCTUATION","GRAMMAR","VERBS","CONFUSIONS2","CONJUNCTIONS","SPELLING","INCORRECT_EXPRESSIONS","REFLEXIVE_VERBS"]);
+// Sons de dubte que es treuen (només sons, mai paraules: la veu és de l'autor).
+// (Ni «em» ni «eh» hi són: poden ser paraules de debò.)
+const DUBTES = /(^|[\s,])(ehm+|eh{2,}|e{3,}|m{2,}|hm+|uhm+|um{2,})(?=[\s,.!?]|$)/gi;
+
+// ───────── Memòria del navegador (pot fallar en finestres privades) ─────────
+const mem = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v === null ? d : v; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, v); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} },
+};
+
+const $ = id => document.getElementById(id);
+let idioma = mem.get("dictar.idioma", "ca");
+let gravador = null, trossos = [], flux = null, estatActual = "repos", inici = 0, rellotge = null;
+
+// ───────── Pantalles ─────────
+function mostraClau(cancelable){
+  $("clau").classList.remove("amagat");
+  $("app").classList.add("amagat");
+  $("cancelaClau").classList.toggle("amagat", !cancelable);
+  $("clauInput").value = "";
+  $("clauInput").focus();
+}
+function mostraApp(){
+  $("clau").classList.add("amagat");
+  $("app").classList.remove("amagat");
+  pintaIdioma();
+  pintaHistorial();
+}
+$("desaClau").onclick = () => {
+  const k = $("clauInput").value.trim();
+  if (!k.startsWith("gsk_") || k.length < 20){
+    $("clauError").textContent = "La clau ha de començar per gsk_ i ser llarga. Torna-la a copiar i enganxar sencera.";
+    $("clauError").classList.remove("amagat");
+    return;
+  }
+  $("clauError").classList.add("amagat");
+  mem.set("dictar.clau", k);
+  mostraApp();
+};
+$("clauInput").addEventListener("keydown", e => { if (e.key === "Enter") $("desaClau").click(); });
+$("cancelaClau").onclick = mostraApp;
+$("canviaClau").onclick = () => mostraClau(true);
+
+// ───────── Idioma ─────────
+function pintaIdioma(){
+  document.querySelectorAll(".idioma button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.idioma === idioma)));
+}
+document.querySelectorAll(".idioma button").forEach(b => b.onclick = () => { idioma = b.dataset.idioma; mem.set("dictar.idioma", idioma); pintaIdioma(); });
+
+// ───────── Estat del botó ─────────
+function estat(text, tipus){ const e = $("estat"); e.textContent = text; e.className = tipus || ""; }
+function posaBoto(mode){
+  estatActual = mode;
+  const b = $("boto");
+  b.classList.toggle("grava", mode === "grava");
+  b.classList.toggle("treballa", mode === "treballa");
+  $("botoText").textContent = mode === "grava" ? "Para" : mode === "treballa" ? "Un moment…" : "Dicta";
+}
+
+// ───────── Gravar ─────────
+async function comenca(){
+  if (!mem.get("dictar.clau", "")) { mostraClau(false); return; }
+  try {
+    flux = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+  } catch (e) {
+    estat("No puc fer servir el micròfon. Mira que estigui connectat i que hagis dit «Permet» al navegador.", "error");
+    return;
+  }
+  const tipus = ["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/ogg"].find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || "";
+  trossos = [];
+  gravador = new MediaRecorder(flux, tipus ? { mimeType: tipus } : undefined);
+  gravador.ondataavailable = e => { if (e.data && e.data.size) trossos.push(e.data); };
+  gravador.onstop = processa;
+  gravador.start();
+  posaBoto("grava");
+  inici = Date.now();
+  estat("T'escolto… 0 s");
+  rellotge = setInterval(() => estat("T'escolto… " + Math.round((Date.now() - inici) / 1000) + " s"), 500);
+}
+function para(){
+  if (gravador && gravador.state !== "inactive") gravador.stop();
+  if (flux) flux.getTracks().forEach(t => t.stop());
+  clearInterval(rellotge);
+  posaBoto("treballa");
+  estat("Escrivint…");
+}
+$("boto").onclick = () => {
+  if (estatActual === "repos") comenca();
+  else if (estatActual === "grava") para();
+};
+// Barra espaiadora (si no s'està escrivint en una casella)
+document.addEventListener("keydown", e => {
+  if (e.code !== "Space" || e.repeat) return;
+  const t = e.target;
+  if (t && (t.tagName === "TEXTAREA" || t.tagName === "INPUT" || t.tagName === "BUTTON")) return;
+  if ($("app").classList.contains("amagat")) return;
+  e.preventDefault();
+  $("boto").click();
+});
+
+// ───────── De la veu al text ─────────
+async function processa(){
+  const durada = (Date.now() - inici) / 1000;
+  const audio = new Blob(trossos, { type: (gravador && gravador.mimeType) || "audio/webm" });
+  if (durada < 0.7 || audio.size < 1500){ posaBoto("repos"); estat("No he sentit res. Torna-ho a provar.", "error"); return; }
+  const ext = audio.type.includes("mp4") ? "m4a" : audio.type.includes("ogg") ? "ogg" : "webm";
+  const fd = new FormData();
+  fd.append("file", audio, "dictat." + ext);
+  fd.append("model", MODEL);
+  fd.append("language", idioma);
+  fd.append("prompt", VOCABULARI[idioma]);
+  fd.append("response_format", "text");
+  fd.append("temperature", "0");
+  let text;
+  try {
+    const r = await fetch(GROQ_URL, { method: "POST", headers: { Authorization: "Bearer " + mem.get("dictar.clau", "") }, body: fd });
+    if (r.status === 401){ posaBoto("repos"); estat("La clau de Groq no funciona. Clica «Canvia la clau de Groq», a baix de tot.", "error"); return; }
+    if (r.status === 429){ posaBoto("repos"); estat("Massa dictats seguits. El servei gratuït demana una pausa: espera un minut.", "error"); return; }
+    if (!r.ok){ posaBoto("repos"); estat("No s'ha pogut dictar (error " + r.status + "). Torna-ho a provar.", "error"); return; }
+    text = (await r.text()).trim();
+  } catch (e) {
+    posaBoto("repos"); estat("No s'ha pogut dictar. Comprova que tens internet.", "error"); return;
+  }
+  if (!text || FANTASMES.some(f => f.test(text)) || (text.length > 15 && VOCABULARI[idioma].includes(text.replace(/\.$/, "")))){
+    posaBoto("repos"); estat("No he sentit res. Torna-ho a provar.", "error"); return;
+  }
+  text = neteja(text);
+  estat("Revisant l'ortografia…");
+  const { corregit, canvis } = await corregeix(text);
+  await acaba(corregit, canvis);
+}
+
+// Neteja suau: repeticions, sons de dubte, espais i majúscula inicial.
+function neteja(t){
+  t = t.replace(/(?<!\p{L})(\p{L}+)(?:,?\s+\1)+(?!\p{L})/giu, "$1");
+  t = t.replace(DUBTES, "$1");
+  t = t.replace(/\s+/g, " ").replace(/\s+([.!?,;:])/g, "$1").replace(/,(\s*[,.])/g, "$1").replace(/^[,\s]+/, "").trim();
+  return t ? t[0].toUpperCase() + t.slice(1) : t;
+}
+
+function senseAccents(p){ return p.normalize("NFD").replace(/\p{Mn}/gu, "").toLowerCase(); }
+function esSegura(m, text){
+  if (!m.replacements || !m.replacements.length) return false;
+  const cat = m.rule && m.rule.category && m.rule.category.id;
+  if (!SEGURES.has(cat)) return false;
+  if (cat === "TYPOS"){
+    const original = text.substr(m.offset, m.length), proposta = m.replacements[0].value;
+    if (senseAccents(original) !== senseAccents(proposta)) return false;      // només accents
+    const abans = text.slice(0, m.offset).trimEnd();
+    if (original[0] && original[0] !== original[0].toLowerCase() && abans && !/[.!?]$/.test(abans)) return false; // nom propi
+  }
+  return true;
+}
+async function corregeix(text){
+  try {
+    const cos = new URLSearchParams({ text, language: CORRECTOR_LLENGUA[idioma] });
+    const ctrl = new AbortController(); const temps = setTimeout(() => ctrl.abort(), 6000);
+    const r = await fetch(CORRECTOR_URL, { method: "POST", body: cos, signal: ctrl.signal });
+    clearTimeout(temps);
+    if (!r.ok) return { corregit: text, canvis: [] };
+    const d = await r.json();
+    const bones = (d.matches || []).filter(m => esSegura(m, text)).sort((a, b) => b.offset - a.offset);
+    let c = text; const canvis = [];
+    for (const m of bones){
+      const orig = c.substr(m.offset, m.length), prop = m.replacements[0].value;
+      c = c.slice(0, m.offset) + prop + c.slice(m.offset + m.length);
+      canvis.unshift("«" + orig + "» → «" + prop + "»");
+    }
+    return { corregit: c, canvis };
+  } catch (e) {
+    return { corregit: text, canvis: [] };   // sense corrector, el dictat no s'atura
+  }
+}
+
+// ───────── Copiar ─────────
+async function copia(text){
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch (e) {
+    try { const t = $("text"); t.focus(); t.select(); const ok = document.execCommand("copy"); t.blur(); return ok; }
+    catch (e2) { return false; }
+  }
+}
+async function acaba(text, canvis){
+  $("resultat").classList.remove("amagat");
+  $("text").value = text;
+  const cc = $("correccions");
+  if (canvis.length){ cc.textContent = "Correccions fetes: " + canvis.join(", "); cc.classList.remove("amagat"); }
+  else cc.classList.add("amagat");
+  desaHistorial(text);
+  posaBoto("repos");
+  if (await copia(text)) estat("✓ Copiat! Ara ves al Word, clica on el vols i prem Ctrl+V.", "ok");
+  else estat("Text a punt. Clica «Copia de nou» i després, al Word, prem Ctrl+V.", "error");
+}
+$("copia").onclick = async () => {
+  if (await copia($("text").value)) estat("✓ Copiat! Ara ves al Word, clica on el vols i prem Ctrl+V.", "ok");
+};
+
+// ───────── Historial (només en aquest navegador) ─────────
+function llegeixHist(){ try { return JSON.parse(mem.get("dictar.historial", "[]")) || []; } catch (e) { return []; } }
+function desaHistorial(text){
+  const h = llegeixHist(); h.unshift({ t: text, d: Date.now() });
+  mem.set("dictar.historial", JSON.stringify(h.slice(0, 50))); pintaHistorial();
+}
+function pintaHistorial(){
+  const h = llegeixHist(), ol = $("llista"); ol.textContent = "";
+  $("historial").classList.toggle("amagat", !h.length);
+  h.forEach(item => {
+    const li = document.createElement("li"), s = document.createElement("span"), sm = document.createElement("small"), b = document.createElement("button");
+    sm.textContent = new Date(item.d).toLocaleString("ca-ES", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+    s.append(sm, document.createTextNode(item.t));
+    b.textContent = "Copia";
+    b.onclick = async () => { if (await copia(item.t)) estat("✓ Copiat! Ara ves al Word i prem Ctrl+V.", "ok"); };
+    li.append(s, b); ol.append(li);
+  });
+}
+$("esborraHist").onclick = () => { if (confirm("Vols esborrar tots els dictats guardats en aquest navegador?")) { mem.del("dictar.historial"); pintaHistorial(); } };
+
+// ───────── Inici ─────────
+if (!window.MediaRecorder || !navigator.mediaDevices){
+  document.querySelector("main").insertAdjacentHTML("beforeend", '<p class="avis">Aquest navegador no pot gravar la veu. Obre aquesta pàgina amb Chrome o amb Edge.</p>');
+}
+if (mem.get("dictar.clau", "")) mostraApp(); else mostraClau(false);
+</script>
+</body>
+</html>

@@ -5,6 +5,7 @@ name: Fabrica DICTAR per a Windows
 on:
   push:
     branches: [main]
+    paths-ignore: ["docs/**"]   # la pàgina web no cal fabricar-la
   workflow_dispatch:
 
 permissions:
